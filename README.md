@@ -3,6 +3,9 @@
 A TAP Academy Python lesson video built with [HyperFrames](https://hyperframes.heygen.com):
 HTML compositions animated with GSAP, rendered to MP4. 1920 × 1080, 30 fps, 2 m 30 s.
 
+**Continuing this video or making the next one?** Read [VIDEO-STYLE-GUIDE.md](VIDEO-STYLE-GUIDE.md) —
+the approved design style, rules, workflow and a ready-made prompt for a new chat.
+
 ## Run it
 
 ```bash
