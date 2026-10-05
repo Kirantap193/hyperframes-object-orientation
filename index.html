@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>OOPS — the four pillars</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #010101; /* the approved flat dark black */
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #010101;
+      }
+      /* Scene slots stretch over the whole frame; each scene positions its own pieces. */
+      #root > div[data-composition-src] {
+        position: absolute;
+        inset: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-4nyc" id="root" data-composition-id="main" data-start="0" data-duration="150.465" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-puyp" id="el-temple" data-composition-id="oops-temple" data-composition-src="compositions/oops-temple.html" data-start="0" data-duration="10.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div data-hf-id="hf-sx8t" id="el-food" data-composition-id="food-order" data-composition-src="compositions/food-order.html" data-start="10.8" data-duration="13.325" data-track-index="2" data-track-kind="video" data-width="1920" data-height="1080"></div>
+      <div data-hf-id="hf-7hbg" id="el-delivery" data-composition-id="delivery" data-composition-src="compositions/delivery.html" data-start="24.125" data-duration="8" data-track-index="3" data-track-kind="video" data-width="1920" data-height="1080"></div>
+      <div data-hf-id="hf-35s4" id="el-app-logo" data-composition-id="app-logo" data-composition-src="compositions/app-logo.html" data-start="32.125" data-duration="15.1" data-track-index="4" data-track-kind="video" data-width="1920" data-height="1080"></div>
+      <div data-hf-id="hf-nlop" id="el-objects" data-composition-id="objects" data-composition-src="compositions/objects.html" data-start="47.225" data-duration="39.04" data-track-index="5" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div data-hf-id="hf-51ph" id="el-class-cards" data-composition-id="class-cards" data-composition-src="compositions/class-cards.html" data-start="65.365" data-duration="20.9" data-track-index="6" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div data-hf-id="hf-1cu5" id="el-class-layout" data-composition-id="class-layout" data-composition-src="compositions/class-layout.html" data-start="86.265" data-duration="64.2" data-track-index="7" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div data-hf-id="hf-qiny" id="el-class-hl" data-composition-id="class-hl" data-composition-src="compositions/class-hl.html" data-start="136.865" data-duration="13.6" data-track-index="8" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+    </div>
+    <script>
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

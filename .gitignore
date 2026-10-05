@@ -1,0 +1,8 @@
+# Rendered video (large, rebuilt with `npm run render`)
+renders/
+
+# Studio / CLI scratch output
+.thumbnails/
+snapshots/
+**/contact-sheet.jpg
+node_modules/

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Class cards: layout moves</title>
+  </head>
+  <body>
+    <template id="class-layout-template">
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          background: #000000;
+        }
+        /* Every piece is placed at its frame position on the last frame of the objects + class-cards
+           slide, then moved with x / y / scale about its top-left corner. */
+        .cl-el { position: absolute; transform-origin: 0 0; }
+        .cl-el > img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+        /* "< Enumeration >" inside the FoodItem card, in the band added above its fields. */
+        .cl-enum {
+          position: absolute; display: flex; align-items: center; justify-content: center; gap: 0.45em;
+          white-space: nowrap; font-family: "Poppins", "Inter", "Segoe UI", sans-serif; font-weight: 500;
+          color: #efe2ff; letter-spacing: 0.03em;
+          text-shadow: 0 0 12px rgba(200,120,255,.55), 0 2px 3px rgba(0,0,0,.7);
+        }
+        .cl-enum b { font-weight: 600; color: #ff86de; }
+        /* Has-A: 3-D cyan rods with diamonds at the Restaurant end; raised lettering, no glow. */
+        .cl-rod { position: absolute; height: 10px; margin-top: -5px;
+          background: linear-gradient(180deg, #d4f6ff 0%, #5fd3f5 38%, #1e95c2 72%, #0d5f80 100%);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 5px 6px rgba(0,0,0,.75); transform: scaleX(0); }
+        .cl-dia-pos { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; opacity: 0; }
+        .cl-dia { position: absolute; left: 7px; top: 7px; width: 30px; height: 30px;
+          transform: rotate(45deg);
+          background: linear-gradient(135deg, #d4f6ff 0%, #5fd3f5 40%, #1e95c2 75%, #0d5f80 100%);
+          box-shadow: 3px 3px 5px rgba(0,0,0,.75); }
+        .cl-dia-hole { position: absolute; inset: 6px; background: #000;
+          box-shadow: inset 2px 2px 3px rgba(0,0,0,.9), inset -1px -1px 2px rgba(120,220,255,.35); }
+        .cl-lbl { position: absolute; width: 400px; margin-left: -200px; text-align: center; white-space: nowrap;
+          font-family: "Poppins", "Inter", sans-serif; font-weight: 400; font-size: 34px; line-height: 1;
+          color: #fbe7a1;
+          text-shadow: 0 1px 0 #e0c779, 0 2px 0 #c4a95a, 0 3px 0 #a68b3f, 0 4px 0 #866d28, 0 8px 8px rgba(0,0,0,.8); }
+        .cl-title { position: absolute; left: 40px; top: 34px; height: 170px; display: flex; align-items: center; gap: 34px; }
+        .cl-hasa { font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 116px; line-height: 1;
+          color: #ffffff; letter-spacing: 1px;
+          text-shadow: 0 1px 0 #dcdcdc, 0 2px 0 #c4c4c4, 0 3px 0 #acacac, 0 4px 0 #949494, 0 5px 0 #7c7c7c,
+                       0 6px 0 #646464, 0 12px 12px rgba(0,0,0,.8); }
+        .cl-bar { width: 14px; height: 150px; border-radius: 4px; transform-origin: 50% 0; transform: scaleY(0);
+          background: linear-gradient(90deg, #ff7a9c 0%, #ff3d6e 45%, #c2184a 100%);
+          box-shadow: 4px 5px 6px rgba(0,0,0,.7); }
+        .cl-kinds { font-family: "Bebas Neue", "Oswald", sans-serif; font-size: 82px; line-height: 0.95; letter-spacing: 1px;
+          color: #d4e157;
+          text-shadow: 0 1px 0 #b9c541, 0 2px 0 #9daa2f, 0 3px 0 #818d20, 0 4px 0 #667014, 0 9px 9px rgba(0,0,0,.8); }
+        .cl-tc { opacity: 0; }
+        .cl-all { position: absolute; inset: 0; }
+        /* The clip in a raised, bevelled frame with a drop shadow (no glow). */
+        .cl-team { position: absolute; left: 686px; top: 674px; width: 668px;
+          height: 388px; border-radius: 26px; opacity: 0; transform-origin: 50% 100%;
+          background: linear-gradient(160deg, #5b6474 0%, #2c323d 45%, #161a21 100%);
+          box-shadow: inset 0 2px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.6),
+                      0 8px 0 #0b0d11, 0 22px 30px rgba(0,0,0,.85); }
+        .cl-team-in { position: absolute; left: 14px; top: 14px; width: 640px; height: 360px;
+          border-radius: 14px; overflow: hidden; background: #000;
+          box-shadow: inset 0 3px 8px rgba(0,0,0,.8); }
+        .cl-pl-title { position: absolute; display: flex; align-items: center; white-space: nowrap;
+          font-family: "Poppins", "Inter", sans-serif; font-weight: 700; letter-spacing: 0.2px; color: #1d222a;
+          text-shadow: 0 1px 0 rgba(255,255,255,.65), 0 -1px 0 rgba(0,0,0,.25); }
+        .cl-pl-split { clip-path: inset(0 50% 0 50%); }
+        .cl-pl-block { position: absolute; opacity: 0; background-repeat: no-repeat; }
+        .cl-tt { position: absolute; left: -0.5px; top: -38.5px; width: 2000px; height: 668px;
+          transform: scale(0.46); transform-origin: 0 0; }
+        .cl-tt-el { position: absolute; opacity: 0; }
+        .cl-tt-ch { position: absolute; opacity: 0; background: url(assets/tt-title.png) no-repeat; }
+        .cl-px { position: absolute; left: 0; top: 0; width: 100%; opacity: 0; }
+        .cl-px img, .cl-px .cl-px-sl { position: absolute; left: 0; display: block; width: 100%; }
+        .cl-px-sl { background: url(assets/cd-plat.png) no-repeat; background-size: 100% auto; }
+        .cl-px-row { position: absolute; display: flex; align-items: center; white-space: nowrap;
+          font-family: "Segoe UI", "Inter", sans-serif; color: #ebeef4; }
+        .cl-px-type { position: absolute; color: #3de2c1; font-weight: 700; }
+        .cl-px-id { border-radius: 5px; font-family: "Inter", sans-serif; font-weight: 800; color: #24303d;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(160deg, #ffffff 0%, #cfd6df 55%, #8d97a3 100%);
+          box-shadow: inset 0 1px 0 #fff, 0 2px 3px rgba(0,0,0,.6); }
+        .cl-px-coin { border-radius: 50%; font-family: "Inter", sans-serif; font-weight: 800; color: #7a4a00;
+          display: flex; align-items: center; justify-content: center;
+          background: radial-gradient(circle at 35% 30%, #fff3b0 0%, #ffd23f 45%, #d98e00 100%);
+          box-shadow: inset 0 -2px 2px rgba(120,60,0,.5), 0 2px 3px rgba(0,0,0,.6); }
+        .cl-team-in video, .cl-team-in img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      </style>
+
+      <!-- 1. The pills, arrows and State / Behaviour lists fade away and each class card glides to its
+           corner with its object beside it (Customer top-left, DeliveryAgent top-right, Restaurant
+           bottom-left, FoodItem bottom-right). 2. Restaurant moves to the centre, its building above it.
+           3. Customer moves down to the middle of the left side. -->
+      <div data-hf-id="hf-5f9e" id="root" data-composition-id="class-layout" data-width="1920" data-height="1080" data-duration="64.2">
+        <div data-hf-id="hf-2egn" class="cl-all"></div>
+        <div data-hf-id="hf-f239" class="cl-team">
+          <div data-hf-id="hf-yzoz" class="cl-team-in">
+            <video data-hf-id="hf-x9yr" id="cl-team-video" class="clip" src="assets/team.mp4" data-start="30.3" data-duration="3.0" data-media-start="0" data-track-index="0" muted playsinline></video>
+            <img data-hf-id="hf-wdst" id="cl-team-still" class="clip" src="assets/team-last.jpg" data-start="33.3" data-duration="30.9" data-track-index="1" alt="The development team at their desk">
+          </div>
+        </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+      <script>
+        (function () {
+          var P = {"cust":{"start":{"char":[367.3,14.0,261.0,362.5],"pill":[378.90000000000003,368.525,226.2,50.025],"arrow":[425.3,418.55,148.625,39.875],"panels":{"s":[367.3,457.7,127.6,158.04999999999998],"b":[494.9,457.7,174.0,195.75]},"card":[345.78,671.96,312.48,378.0]},"card1":{"x":-132.5,"y":-596.0,"scale":0.9841},"char1":{"x":-340.9,"y":128.0,"scale":0.6621},"card3":{"x":-127.5,"y":-318.0,"scale":0.9841},"char3":{"x":-335.9,"y":406.0,"scale":0.6621}},"rest":{"start":{"char":[628.3,35.75,356.7,349.45],"pill":[708.05,371.425,236.35,47.125],"arrow":[755.175,418.55,145.0,39.875],"panels":{"s":[692.1,457.7,130.5,158.04999999999998],"b":[825.5,457.7,168.2,158.04999999999998]},"card":[668.3399999999999,679.52,298.62,362.88]},"card1":{"x":-439.3,"y":-37.1,"scale":0.9841},"char1":{"x":-597.0,"y":655.2,"scale":0.5151},"card2":{"x":122.7,"y":-258.1,"scale":0.9841},"char2":{"x":222.9,"y":203.7,"scale":0.4865}},"agent":{"start":{"char":[1001.675,68.375,286.375,315.375],"pill":[1024.15,371.425,250.85,47.125],"arrow":[1070.55,418.55,148.625,39.875],"panels":{"s":[1012.55,457.7,132.67499999999998,159.5],"b":[1146.675,457.7,187.04999999999998,159.5]},"card":[978.3,680.15,311.85,359.1]},"card1":{"x":406.2,"y":-594.8,"scale":0.9841},"char1":{"x":703.8,"y":98.6,"scale":0.6025}},"food":{"start":{"char":[1291.675,133.625,250.125,234.17499999999998],"pill":[1328.65,366.34999999999997,189.225,50.75],"arrow":[1411.3,417.09999999999997,36.25,41.324999999999996],"panels":{"s":[1371.425,457.7,132.67499999999998,159.5]},"card":[1300.23,691.49,274.05,306.81]},"card1":{"x":99.9,"y":-21.5,"scale":0.9841},"char1":{"x":392.2,"y":574.9,"scale":0.7046}}};
+          var ORDER = ["cust", "rest", "agent", "food"];
+          var FADE_AT = 0.3, FADE_DUR = 0.6;
+          var MOVE1_AT = 0.6, MOVE_DUR = 1.4, STAGGER = 0.1;
+          var MOVE2_AT = 3.8, MOVE2_DUR = 1.2, MOVE3_AT = 6.4, MOVE3_DUR = 1.1;
+          var root = document.querySelector('[data-composition-id="class-layout"]');
+          var tl = gsap.timeline({ paused: true });
+          var all = root.querySelector(".cl-all");   // everything except the team clip lives in here
+
+          function el(id, box, src) {
+            var d = document.createElement("div");
+            d.className = "cl-el"; d.id = id;
+            d.style.left = box[0] + "px"; d.style.top = box[1] + "px";
+            d.style.width = box[2] + "px"; d.style.height = box[3] + "px";
+            var i = document.createElement("img"); i.src = src; i.alt = ""; d.appendChild(i);
+            all.appendChild(d);
+            return d;
+          }
+
+          // The previous slide, rebuilt piece for piece: lists and arrows first, then pills,
+          // characters and the class cards.
+          var leaving = [], els = {};
+          ORDER.forEach(function (k) {
+            var s = P[k].start;
+            leaving.push(el("cl-" + k + "-arrow", s.arrow, "assets/ob-" + k + "-arrow.png"));
+            Object.keys(s.panels).forEach(function (pk) {
+              leaving.push(el("cl-" + k + "-" + pk, s.panels[pk], "assets/ob-" + k + "-" + pk + ".png"));
+            });
+          });
+          ORDER.forEach(function (k) { leaving.push(el("cl-" + k + "-pill", P[k].start.pill, "assets/ob-" + k + "-pill.png")); });
+          ORDER.forEach(function (k) {
+            els[k] = { char: el("cl-" + k + "-char", P[k].start.char, "assets/ob-" + k + ".png"),
+                        card: el("cl-" + k + "-card", P[k].start.card, "assets/cd-" + k + ".png") };
+          });
+
+          // FoodItem's "< Enumeration >" tag, inside its card (card sized at 0.63 of the artwork).
+          var E = [146, 64], FH = 487, FW = 435;
+          var en = document.createElement("div");
+          en.className = "cl-enum"; en.id = "cl-food-enum";
+          en.style.left = (39 / FW * 100) + "%"; en.style.width = (365 / FW * 100) + "%";
+          en.style.top = (128 / FH * 100) + "%"; en.style.height = ((E[0] + E[1] - 128) / FH * 100) + "%";
+          en.style.fontSize = (40 * 0.63) + "px";
+          en.innerHTML = "<b>&lt;</b>Enumeration<b>&gt;</b>";
+          els.food.card.appendChild(en);
+
+          // 1. Lists, arrows and pills fade; cards and objects glide to the corners.
+          tl.to(leaving, { opacity: 0, duration: FADE_DUR, ease: "power1.inOut" }, FADE_AT);
+          ORDER.forEach(function (k, i) {
+            var at = MOVE1_AT + i * STAGGER;
+            tl.to(els[k].card, Object.assign({ duration: MOVE_DUR, ease: "power2.inOut" }, P[k].card1), at);
+            tl.to(els[k].char, Object.assign({ duration: MOVE_DUR, ease: "power2.inOut" }, P[k].char1), at);
+          });
+
+          // 2. Restaurant moves to the centre, its building settling above the card.
+          tl.to(els.rest.card, Object.assign({ duration: MOVE2_DUR, ease: "power2.inOut" }, P.rest.card2), MOVE2_AT);
+          tl.to(els.rest.char, Object.assign({ duration: MOVE2_DUR, ease: "power2.inOut" }, P.rest.char2), MOVE2_AT);
+
+          // 3. Customer moves down to the middle of the left side.
+          tl.to(els.cust.card, Object.assign({ duration: MOVE3_DUR, ease: "power2.inOut" }, P.cust.card3), MOVE3_AT);
+          tl.to(els.cust.char, Object.assign({ duration: MOVE3_DUR, ease: "power2.inOut" }, P.cust.char3), MOVE3_AT);
+
+          // ---------------- Has-A ----------------
+          var H = {"cust": {"x0": 521.76, "x1": 771.06, "y": 575, "dia": 771.06, "end": "right"}, "agent": {"x0": 1104.94, "x1": 1388.55, "y": 470.3, "dia": 1104.94, "end": "left"}, "food": {"x0": 1104.94, "x1": 1404.15, "y": 730.03, "dia": 1104.94, "end": "left"}};
+          var CHAR = 0.06;
+          function div(cls, css, html) {
+            var d = document.createElement("div"); d.className = cls;
+            Object.keys(css).forEach(function (k) { d.style[k] = css[k]; });
+            if (html) d.innerHTML = html;
+            all.appendChild(d); return d;
+          }
+          // Type text into el one character at a time (no caret); returns the time it finishes.
+          function typeOn(el, text, at) {
+            el.textContent = "";
+            text.split("").forEach(function (ch, i) {
+              var sp = document.createElement("span"); sp.className = "cl-tc";
+              sp.textContent = ch === " " ? " " : ch; el.appendChild(sp);
+              tl.set(sp, { opacity: 1 }, at + i * CHAR);
+            });
+            return at + text.length * CHAR;
+          }
+          var rods = {}, dias = {};
+          Object.keys(H).forEach(function (k) {
+            var h = H[k];
+            rods[k] = div("cl-rod", { left: h.x0 + "px", top: h.y + "px", width: (h.x1 - h.x0) + "px",
+              transformOrigin: "0 50%",            // Customer's rod runs out of its card; the others out of their diamonds
+              borderRadius: h.end === "right" ? "5px 0 0 5px" : "0 5px 5px 0" });  // square where it meets the diamond
+            dias[k] = div("cl-dia-pos", { left: h.dia + "px", top: h.y + "px" },
+              '<div class="cl-dia"><div class="cl-dia-hole"></div></div>');
+          });
+          function rod(k, at) { tl.fromTo(rods[k], { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, at); }
+          function dia(k, at) {
+            tl.fromTo(dias[k], { opacity: 0 }, { opacity: 1, duration: 0.15 }, at);
+            tl.fromTo(dias[k], { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2.2)",
+              immediateRender: false }, at);
+          }
+          function label(k, text, above, at) {
+            var h = H[k];   // centre over the rod's visible part (between the card and the diamond's tip)
+            var cx = h.end === "right" ? (h.x0 + h.dia - 21) / 2 : (h.dia + 21 + h.x1) / 2;
+            var el = div("cl-lbl", { left: cx + "px", top: (above ? h.y - 58 : h.y + 22) + "px" });
+            return typeOn(el, text, at);
+          }
+          var DIA_HALF = 22;
+
+          // 1. Customer -> Restaurant: the rod runs out of the Customer card, the diamond pops at the Restaurant.
+          rod("cust", 8.0);
+          dia("cust", 8.0 + 0.65);
+          label("cust", "Has-A", true, 8.0 + 1.1);
+
+          // 2. DeliveryAgent slides down to meet its line.
+          tl.to(els.agent.card, { y: P.agent.card1.y + 60, duration: 0.8, ease: "power2.inOut" }, 10.0);
+          tl.to(els.agent.char, { y: P.agent.char1.y + 60, duration: 0.8, ease: "power2.inOut" }, 10.0);
+
+          // 3. Diamonds at the Restaurant, rods out to DeliveryAgent and FoodItem.
+          dia("agent", 11.4); rod("agent", 11.4 + 0.3);
+          dia("food", 13.2); rod("food", 13.2 + 0.3);
+
+          // 4. "Has-A" on both.
+          label("agent", "Has-A", true, 15.0);
+          label("food", "Has-A", true, 16.0);
+
+          // 5. Title: the user's Has-A | AGGREGATION / COMPOSITION plaques (scaled 0.46). Each plaque
+          //    pops in empty, then its own lettering is revealed one letter at a time.
+          var TT = {"has": {"box": [88, 162, 944, 320], "inner": [34, 32, 878, 258], "edges": [0, 273, 434, 563, 637, 878]}, "agg": {"box": [1098, 162, 814, 168], "inner": [28, 26, 762, 122], "edges": [0, 100, 177, 258, 321, 374, 449, 514, 571, 593, 678, 762]}, "comp": {"box": [1098, 326, 814, 156], "inner": [28, 20, 762, 116], "edges": [0, 95, 183, 277, 341, 425, 485, 507, 568, 589, 677, 762]}, "bar": {"box": [1038, 166, 54, 308]}};
+          var title = div("cl-tt", {});
+          function plaque(k, src) {
+            var b = TT[k].box, d = document.createElement("div");
+            d.className = "cl-tt-el"; d.id = "cl-tt-" + k;
+            d.style.left = b[0] + "px"; d.style.top = b[1] + "px"; d.style.width = b[2] + "px"; d.style.height = b[3] + "px";
+            d.innerHTML = '<img src="assets/tt-' + k + '.png" alt="" style="width:100%;height:100%;display:block">';
+            title.appendChild(d); return d;
+          }
+          function letters(k, at, gap) {
+            var b = TT[k].box, n = TT[k].inner, e = TT[k].edges;
+            for (var i = 0; i < e.length - 1; i++) {
+              var c = document.createElement("div"), x = b[0] + n[0] + e[i], y = b[1] + n[1];
+              c.className = "cl-tt-ch"; c.id = "cl-tt-" + k + i;
+              c.style.left = x + "px"; c.style.top = y + "px";
+              c.style.width = (e[i + 1] - e[i]) + "px"; c.style.height = n[3] + "px";
+              c.style.backgroundPosition = (-x) + "px " + (-y) + "px";
+              title.appendChild(c);
+              tl.set(c, { opacity: 1 }, at + i * gap);
+            }
+            return at + (e.length - 1) * gap;
+          }
+          function pop(el, at) {
+            tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, at);
+            tl.fromTo(el, { scale: 0.85 }, { scale: 1, duration: 0.5, ease: "back.out(1.6)", immediateRender: false }, at);
+          }
+          var ttHas = plaque("has"), ttBar = plaque("bar"), ttAgg = plaque("agg"), ttComp = plaque("comp");
+          ttBar.style.transformOrigin = "50% 0";
+          pop(ttHas, 17.0);
+          var t5 = letters("has", 17.0 + 0.5, 0.1);
+          tl.fromTo(ttBar, { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.45, ease: "power2.out" }, t5 + 0.5);
+          pop(ttAgg, t5 + 1.2);
+          t5 = letters("agg", t5 + 1.6, 0.06);
+          pop(ttComp, t5 + 0.6);
+          letters("comp", t5 + 1.0, 0.06);
+
+          // 6. Restaurant - FoodItem is composition: its diamond fills solid.
+          tl.to(dias.food.querySelector(".cl-dia-hole"), { opacity: 0, duration: 0.35, ease: "power1.inOut" }, 22.7);
+          tl.fromTo(dias.food, { scale: 1 }, { scale: 1.35, duration: 0.18, ease: "power1.out", yoyo: true, repeat: 1,
+            immediateRender: false }, 22.7);
+          label("food", "Composition", false, 22.7 + 0.4);
+
+          // 7. The other two are aggregation.
+          label("cust", "Aggregation", false, 24.9);
+          label("agent", "Aggregation", false, 26.7);
+
+          // ---------------- The development team at work ----------------
+          tl.to(title, { opacity: 0, duration: 0.5, ease: "power1.inOut" }, 28.7);
+          tl.fromTo(all, { y: 0 }, { y: -130, duration: 1.0, ease: "power2.inOut" }, 28.7 + 0.3);
+          var team = root.querySelector(".cl-team");
+          tl.fromTo(team, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 30.3);
+          tl.fromTo(team, { y: 60, scale: 0.85 }, { y: 0, scale: 1, duration: 0.6, ease: "back.out(1.6)",
+            immediateRender: false }, 30.3);
+
+          // ---------------- PlatinumCustomer ----------------
+          // Placed inside the lifted layer, so add the lift back to land on frame positions.
+          var PL = {"box_w": 646, "box_h": 600, "s": [41, 146, 567, 194], "b": [41, 352, 567, 218], "split": [326, 366], "title": [150, 30, 448, 92]}, PK = 0.62, LIFT = 130;
+          var pc = [218.24, 650, 400.52, 372.0], pg = [31.24000000000001, 716.0, 173, 240];
+          var plGirl = el("cl-plat-girl", [pg[0], pg[1] + LIFT, pg[2], pg[3]], "assets/ob-plat.png");
+          var plCard = el("cl-plat-card", [pc[0], pc[1] + LIFT, pc[2], pc[3]], "assets/cd-plat-e.png");
+          plGirl.style.opacity = "0"; plCard.style.opacity = "0";
+          plGirl.style.transformOrigin = "50% 100%"; plCard.style.transformOrigin = "50% 30%";
+          var plSplit = document.createElement("img");
+          plSplit.src = "assets/cd-plat-s.png"; plSplit.alt = ""; plSplit.className = "cl-pl-split";
+          plCard.appendChild(plSplit);
+          function plBlock(r, id) {
+            var b = document.createElement("div"); b.className = "cl-pl-block"; b.id = id;
+            b.style.left = r[0] * PK + "px"; b.style.top = r[1] * PK + "px";
+            b.style.width = r[2] * PK + "px"; b.style.height = r[3] * PK + "px";
+            b.style.backgroundImage = "url(assets/cd-plat.png)";
+            b.style.backgroundSize = PL.box_w * PK + "px " + PL.box_h * PK + "px";
+            b.style.backgroundPosition = (-r[0] * PK) + "px " + (-r[1] * PK) + "px";
+            plCard.appendChild(b); return b;
+          }
+          var plState = plBlock(PL.s, "cl-plat-state"), plBeh = plBlock(PL.b, "cl-plat-beh");
+          var plTitle = document.createElement("div"); plTitle.className = "cl-pl-title"; plTitle.id = "cl-plat-title";
+          plTitle.style.left = PL.title[0] * PK + "px"; plTitle.style.top = PL.title[1] * PK + "px";
+          plTitle.style.width = PL.title[2] * PK + "px"; plTitle.style.height = PL.title[3] * PK + "px";
+          plTitle.style.fontSize = "27px";
+          plCard.appendChild(plTitle);
+
+          tl.fromTo(plGirl, { opacity: 0 }, { opacity: 1, duration: 0.25 }, 34.1);
+          tl.fromTo(plGirl, { scale: 0.6 }, { scale: 1, duration: 0.6, ease: "back.out(1.6)", immediateRender: false }, 34.1);
+          tl.fromTo(plCard, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 35.1);
+          tl.fromTo(plCard, { scale: 0.85 }, { scale: 1, duration: 0.6, ease: "back.out(1.5)", immediateRender: false }, 35.1);
+          typeOn(plTitle, "PlatinumCustomer", 35.1 + 0.7);
+          tl.fromTo(plSplit, { clipPath: "inset(0% 50% 0% 50%)" },
+            { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power2.inOut" }, 37.5);
+          tl.fromTo(plState, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.inOut" }, 38.9);
+          tl.fromTo(plBeh, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.inOut" }, 40.3);
+
+          // ---------------- PlatinumCustomer grows ----------------
+          // The finished card is re-laid as slices (identical at first); then a clean band opens inside the
+          // State panel and later inside the Behaviour panel, pushing the rest down, and the new rows type on.
+          var H1 = 82, H2 = 62, CW = PL.box_w * PK;          // band heights in artwork px (2 rows each)
+          var px = document.createElement("div"); px.className = "cl-px"; px.id = "cl-px";
+          px.style.height = PL.box_h * PK + "px";
+          plCard.insertBefore(px, plTitle);
+          function slice(parent, y0, y1, id) {
+            var d = document.createElement("div"); d.className = "cl-px-sl"; d.id = id;
+            d.style.top = y0 * PK + "px"; d.style.height = (y1 - y0) * PK + "px";
+            d.style.backgroundPosition = "0 " + (-y0 * PK) + "px";
+            parent.appendChild(d); return d;
+          }
+          function band(parent, y0, h, src, id) {
+            var b = document.createElement("img"); b.src = src; b.alt = ""; b.id = id;
+            b.style.top = y0 * PK + "px"; b.style.height = h * PK + "px"; b.style.transformOrigin = "50% 0";
+            b.style.transform = "scaleY(0)";
+            parent.appendChild(b); return b;
+          }
+          function wrap(parent, id) {
+            var w = document.createElement("div"); w.id = id;
+            w.style.position = "absolute"; w.style.left = "0"; w.style.top = "0"; w.style.width = "100%";
+            parent.appendChild(w); return w;
+          }
+          slice(px, 0, 330, "cl-px-top");
+          var b1 = band(px, 330, H1, "assets/cd-plat-band1.png", "cl-px-b1");
+          var low1 = wrap(px, "cl-px-low1");
+          slice(low1, 330, 568, "cl-px-mid");
+          var b2 = band(low1, 568, H2, "assets/cd-plat-band2.png", "cl-px-b2");
+          var low2 = wrap(low1, "cl-px-low2");
+          slice(low2, 568, PL.box_h, "cl-px-bot");
+
+          var newNames = [];
+          // One new row: icon, then name, " : ", type typed on. Positions in artwork px of the card.
+          function newRow(parent, cy, icon, name, type, at, fs) {
+            var r = document.createElement("div"); r.className = "cl-px-row";
+            r.style.left = "0"; r.style.top = (cy - 20) * PK + "px"; r.style.height = 40 * PK + "px";
+            r.style.width = CW + "px"; r.style.fontSize = fs * PK + "px";
+            parent.appendChild(r);
+            var ic = document.createElement("div"); ic.style.position = "absolute";
+            var cube = icon === "cube";      // the cube is cropped 46 x 36 from the card itself
+            ic.style.left = (cube ? 68 : 74) * PK + "px"; ic.style.top = (cube ? 2 : 3) * PK + "px";
+            ic.style.width = (cube ? 46 : 34) * PK + "px"; ic.style.height = (cube ? 36 : 34) * PK + "px";
+            if (icon === "cube") ic.innerHTML = '<img src="assets/cd-plat-cube.png" alt="" style="width:100%;height:100%">';
+            else { ic.className = icon === "id" ? "cl-px-id" : "cl-px-coin"; ic.textContent = icon === "id" ? "ID" : "C";
+                    ic.style.fontSize = 15 * PK + "px"; ic.style.position = "absolute"; }
+            r.appendChild(ic);
+            tl.fromTo(ic, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.2)" }, at);
+            var nm = document.createElement("div"); nm.style.position = "absolute"; nm.style.left = 145 * PK + "px";
+            r.appendChild(nm);
+            newNames.push(nm);
+            var t = typeOn(nm, name, at + 0.3);
+            if (type) {
+              var co = document.createElement("div"); co.style.position = "absolute"; co.style.left = 289 * PK + "px";
+              r.appendChild(co); t = typeOn(co, ":", t + 0.1);
+              var ty = document.createElement("div"); ty.className = "cl-px-type"; ty.style.left = 327 * PK + "px";
+              r.appendChild(ty); t = typeOn(ty, type, t + 0.1);
+            }
+            return t;
+          }
+
+          // Make room: the card and its girl rise 47 px; the slices take over from the card underneath.
+          tl.to([plCard, plGirl], { y: -47, duration: 0.6, ease: "power2.inOut" }, 42.3);
+          tl.set(px, { opacity: 1 }, 42.3);
+          // State panel opens, then platinum_id ... pause ... credits
+          tl.to(b1, { scaleY: 1, duration: 0.5, ease: "power2.inOut" }, 43.2);
+          tl.fromTo(low1, { y: 0 }, { y: H1 * PK, duration: 0.5, ease: "power2.inOut" }, 43.2);
+          var t6 = newRow(px, 344, "id", "platinum_id", "int", 43.2 + 0.7, 28);
+          newRow(px, 385, "coin", "credits", "int", t6 + 0.8, 28);
+          // Behaviour panel opens, then free_delivery() ... pause ... exclusive_offers()
+          tl.to(b2, { scaleY: 1, duration: 0.5, ease: "power2.inOut" }, 46.6);
+          tl.fromTo(low2, { y: 0 }, { y: H2 * PK, duration: 0.5, ease: "power2.inOut" }, 46.6);
+          var t7 = newRow(low1, 583, "cube", "free_delivery()", null, 46.6 + 0.7, 25);
+          newRow(low1, 614, "cube", "exclusive_offers()", null, t7 + 0.8, 25);
+          // After the repeated lines turn yellow (class-hl.html), what PlatinumCustomer adds turns pink.
+          tl.to(newNames, { color: "#ff7ad9", duration: 0.4, ease: "power1.inOut", stagger: 0.25 }, 61.4);
+
+          window.__timelines["class-layout"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Food Delivery App logo and ANALYSIS PHASE</title>
+  </head>
+  <body>
+    <template id="app-logo-template">
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          background: #000000; /* the clip's own black, so the hold frame and clip match exactly */
+        }
+        /* The logo sits dead centre on the frame; the man stands down in the lower-left corner,
+           thinking about it, with the thought bubbles rising from his head to it. */
+        .al-group { position: absolute; inset: 0; }
+        /* The man's clip at half size (960 x 540): his figure lands at x 280 - 493, feet at y 1010. */
+        .al-man { position: absolute; left: 240px; top: 488px; width: 960px; height: 540px;
+          opacity: 0; transform-origin: 146px 522px; }
+        .al-video, .al-still { position: absolute; left: 0; top: 0; width: 960px; height: 540px; object-fit: cover; }
+        /* The logo (1204 x 1117 after trimming its empty margins) at half its old size: 464 x 430. */
+        .al-logo-pos { position: absolute; left: 728px; top: 325px; width: 464px; height: 430px; }
+        .al-logo { position: absolute; inset: 0; width: 464px; height: 430px; opacity: 0; transform-origin: 50% 55%; }
+        /* Thought bubbles from his head up toward the logo: glossy, slightly 3-D. */
+        .al-dot {
+          position: absolute; border-radius: 50%; opacity: 0;
+          background: radial-gradient(circle at 35% 30%, #ffffff 0%, #eef0f6 45%, #c3c7d4 100%);
+          box-shadow: 0 6px 14px rgba(0,0,0,.45), inset 0 -3px 6px rgba(120,125,145,.35);
+        }
+        #al-d1 { left: 470px; top: 500px; width: 22px; height: 22px; }
+        #al-d2 { left: 528px; top: 440px; width: 34px; height: 34px; }
+        #al-d3 { left: 604px; top: 372px; width: 48px; height: 48px; }
+
+        /* ANALYSIS PHASE: a raised Burnt Orange (#FC6C26, the user's first colour) card at the top,
+           as the heading of the slide. The card hugs its text (no inner padding to speak of) and is
+           centred by the flex row, so it always fits the word exactly. */
+        .al-card-stage { position: absolute; inset: 0; perspective: 1600px; perspective-origin: 50% 0;
+          display: flex; justify-content: center; align-items: flex-start; padding-top: 56px; }
+        .al-card {
+          position: relative; padding: 8px 30px 12px;
+          border-radius: 30px; opacity: 0; overflow: hidden;
+          transform-origin: 50% 0;
+          background: linear-gradient(180deg, #ff8d50 0%, #fc6c26 24%, #e1551a 48%, #d04c16 100%);
+          box-shadow:
+            inset 0 2px 0 rgba(255,214,180,.85),
+            inset 0 -6px 14px rgba(110,28,0,.32),
+            0 2px 0 #dd571b, 0 4px 0 #cb4e17, 0 6px 0 #b84513, 0 8px 0 #a43c10, 0 10px 0 #8f330d,
+            0 22px 34px rgba(0,0,0,.65), 0 0 70px rgba(252,108,38,.28);
+        }
+        .al-card-rim { position: absolute; inset: 5px; border-radius: 25px; border: 1.5px solid rgba(255,236,210,.32); }
+        .al-card-title {
+          position: relative; white-space: nowrap;
+          font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
+          font-weight: 400; font-size: 80px; line-height: 1.15; letter-spacing: 3px;
+          color: #ffffff; /* white: vanilla is too faint on burnt orange */
+          text-shadow:
+            0 -1px 0 rgba(255,255,255,.6),
+            0 2px 0 #e9d3a2, 0 3px 0 #c9a46c, 0 4px 0 #9a6a40,
+            0 10px 14px rgba(70,18,0,.55);
+        }
+        .al-glint {
+          position: absolute; top: -60%; left: -30%; width: 22%; height: 220%;
+          background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.2), rgba(255,255,255,0));
+          transform: rotate(20deg); opacity: 0;
+        }
+      </style>
+
+      <!-- 1. The logo pops up. 2. The man (from "Positioning_subject_on_left_side.mp4", taken from 1.25 s,
+           when he has finished walking in) pops in beside it, looks up at it, and thought bubbles rise.
+           3. The ANALYSIS PHASE card drops in above the logo as the slide's heading.
+           4. The man and his thought bubbles fade out, ANALYSIS PHASE swings back up out of view, and the
+              DESIGN PHASE card swings down in its place the same way; the logo stays centred. -->
+      <div data-hf-id="hf-zomi" id="root" data-composition-id="app-logo" data-width="1920" data-height="1080" data-duration="15.1">
+        <div data-hf-id="hf-y3o1" class="al-group">
+          <div data-hf-id="hf-sk10" class="al-man">
+            <video data-hf-id="hf-ip7m" id="al-video" class="al-video clip" src="assets/man-left.mp4" data-start="1.1" data-duration="2.75" data-media-start="1.25" data-track-index="0" muted playsinline></video>
+            <img data-hf-id="hf-sdtk" id="al-still" class="al-still clip" src="assets/man-left-last.png" data-start="3.85" data-duration="5.65" data-track-index="1" alt="The man looking up at the logo">
+          </div>
+          <!-- Drawn after the man: his clip has a black background that would otherwise cover it. -->
+          <div data-hf-id="hf-f6do" class="al-logo-pos">
+            <img data-hf-id="hf-0ka2" id="al-logo" class="al-logo" src="assets/food-app-logo.webp" alt="Food Delivery App logo">
+          </div>
+          <div data-hf-id="hf-2rps" id="al-d1" class="al-dot"></div>
+          <div data-hf-id="hf-bfln" id="al-d2" class="al-dot"></div>
+          <div data-hf-id="hf-7hhm" id="al-d3" class="al-dot"></div>
+        </div>
+        <audio data-hf-id="hf-o95e" id="al-audio" src="assets/man-left.mp4" data-start="1.1" data-duration="2.75" data-media-start="1.25" data-track-index="12"></audio>
+        <div data-hf-id="hf-n4wj" class="al-card-stage">
+          <div data-hf-id="hf-dar6" id="al-card-a" class="al-card">
+            <div data-hf-id="hf-1az9" class="al-card-rim"></div>
+            <div data-hf-id="hf-448k" id="al-glint-a" class="al-glint"></div>
+            <div data-hf-id="hf-ek9q" class="al-card-title">ANALYSIS PHASE</div>
+          </div>
+        </div>
+        <div data-hf-id="hf-ghyr" class="al-card-stage">
+          <div data-hf-id="hf-idq5" id="al-card-d" class="al-card">
+            <div data-hf-id="hf-hv61" class="al-card-rim"></div>
+            <div data-hf-id="hf-ponl" id="al-glint-d" class="al-glint"></div>
+            <div data-hf-id="hf-9pn6" class="al-card-title">DESIGN PHASE</div>
+          </div>
+        </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+      <script>
+        (function () {
+          var LOGO_AT = 0.25, POP_DUR = 0.7;    // 1. the logo pops up
+          var MAN_AT = 1.1, MAN_DUR = 0.6;      // 2. the man pops in beside it
+          var DOTS_AT = 2.0, DOT_GAP = 0.22;    //    thought bubbles rise once he has turned to it
+          var FLOAT_AT = 1.0, FLOAT_DUR = 1.0;  //    the logo breathes gently throughout
+          var CARD_AT = 4.1, CARD_DUR = 1.0;    // 3. the heading card swings down into place
+          var GLINT_AT = 5.2, GLINT_DUR = 0.9;  //    a light glint crosses it
+          var SWAY_DUR = 1.5;                   //    then it rocks very slightly in 3-D
+          var MAN_OUT = 8.6, OUT_DUR = 0.8;     // 4. the man and his thought bubbles fade out
+          var A_OUT = 9.5, A_OUT_DUR = 0.6;     //    ANALYSIS PHASE swings back up out of view
+          var D_AT = 10.2;                      //    DESIGN PHASE comes in exactly the same way
+          var END_FADE = 14.5;                  // 5. everything fades out, then the objects scene
+          var root = document.querySelector('[data-composition-id="app-logo"]');
+          var q = function (s) { return root.querySelector(s); };
+          var logo = q("#al-logo"), man = q(".al-man");
+          var tl = gsap.timeline({ paused: true });
+
+          tl.fromTo(logo, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, LOGO_AT);
+          tl.fromTo(logo, { scale: 0.2 },
+            { scale: 1, duration: POP_DUR, ease: "back.out(1.7)", immediateRender: false }, LOGO_AT);
+          tl.fromTo(logo, { y: 0 },
+            { y: -8, duration: FLOAT_DUR, ease: "sine.inOut", yoyo: true, repeat: 12,
+              immediateRender: false }, FLOAT_AT);
+
+          tl.fromTo(man, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, MAN_AT);
+          tl.fromTo(man, { scale: 0.75 },
+            { scale: 1, duration: MAN_DUR, ease: "back.out(1.8)", immediateRender: false }, MAN_AT);
+
+          ["#al-d1", "#al-d2", "#al-d3"].forEach(function (sel, i) {
+            var at = DOTS_AT + i * DOT_GAP;
+            tl.fromTo(q(sel), { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "power1.out" }, at);
+            tl.fromTo(q(sel), { scale: 0 },
+              { scale: 1, duration: 0.35, ease: "back.out(2.6)", immediateRender: false }, at);
+          });
+
+          // A heading card hinged at its top edge: swings down from lying flat toward the viewer,
+          // a glint crosses it, then it rocks very slightly in 3-D.
+          function headingIn(card, glint, at) {
+            tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, at);
+            tl.fromTo(card, { rotationX: -95, y: -40 },
+              { rotationX: 0, y: 0, duration: CARD_DUR, ease: "back.out(1.5)", immediateRender: false }, at);
+            tl.fromTo(glint, { opacity: 0, x: 0 },
+              { opacity: 1, x: 1100, duration: GLINT_DUR, ease: "power2.inOut", immediateRender: false },
+              at + GLINT_AT - CARD_AT);
+            tl.to(card, { rotationX: 6, rotationY: 3, duration: SWAY_DUR, ease: "sine.inOut",
+              yoyo: true, repeat: 1 }, at + 1.2);
+          }
+          var cardA = q("#al-card-a"), cardD = q("#al-card-d");
+          headingIn(cardA, q("#al-glint-a"), CARD_AT);
+
+          // 4. The man and his thoughts fade away; the logo stays.
+          tl.to(man, { opacity: 0, duration: OUT_DUR, ease: "power1.inOut" }, MAN_OUT);
+          tl.to([q("#al-d1"), q("#al-d2"), q("#al-d3")], { opacity: 0, duration: OUT_DUR,
+            ease: "power1.inOut" }, MAN_OUT);
+          // ANALYSIS PHASE folds back up the way it came, then DESIGN PHASE swings down.
+          tl.to(cardA, { rotationX: -95, y: -40, opacity: 0, duration: A_OUT_DUR, ease: "power2.in" }, A_OUT);
+          headingIn(cardD, q("#al-glint-d"), D_AT);
+
+          // 5. The slide fades to black before the objects scene.
+          tl.to(root.querySelectorAll(".al-group, .al-card-stage"), { opacity: 0, duration: 0.6,
+            ease: "power1.inOut" }, END_FADE);
+
+          window.__timelines["app-logo"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

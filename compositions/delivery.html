@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Delivery clip</title>
+  </head>
+  <body>
+    <template id="delivery-template">
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          background: #010101;
+        }
+        .dl-video { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+      </style>
+
+      <!-- "object orientation -1 (2).mp4", source 23.5 - 31.5 s (agent collects the order -> she holds the bag), normal speed, no sound in the source. -->
+      <div data-hf-id="hf-x13k" id="root" data-composition-id="delivery" data-width="1920" data-height="1080" data-duration="8">
+        <video data-hf-id="hf-ssjh" id="dl-video" class="dl-video clip" src="assets/delivery.mp4" data-start="0" data-duration="8" data-media-start="0" data-track-index="0" muted playsinline></video>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+      <script>
+        (function () {
+          var tl = gsap.timeline({ paused: true });
+          window.__timelines["delivery"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
